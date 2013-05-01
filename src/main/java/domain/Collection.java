@@ -15,6 +15,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 /**
  * 
  * @author Ward Coessens
@@ -32,14 +35,27 @@ public class Collection {
 	
 	private List<Work> works = new ArrayList<Work>();
 
+	public Collection(){
+		
+	}
+	
+	public Collection(String name) {
+		setName(name);
+	}
+
 	@ManyToMany()
 	@JoinTable(name="werken_collecties" )
+	@Fetch(FetchMode.JOIN)
 	public List<Work> getWorks() {
 		return works;
 	}
 
 	public void setWorks(List<Work> works) {
 		this.works = works;
+	}
+	
+	public void addWork(Work work){
+		this.works.add(work);
 	}
 
 	@Id

@@ -20,7 +20,7 @@ public class Work {
 	/**
 	 * The id for this work 
 	 */
-	private long id;
+	private Long id;
 	
 	/**
 	 * Artist or whoever made this piece.
@@ -38,15 +38,21 @@ public class Work {
 	public Work() {
 		super();
 	}
+	
+	public Work(String title, String creator){
+		this();
+		setTitle(title);
+		setCreator(creator);
+	}
 
 	@Id
 	@GeneratedValue
 	@Column(name="work_id")
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

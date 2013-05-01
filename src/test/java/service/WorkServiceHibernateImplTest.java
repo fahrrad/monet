@@ -43,5 +43,19 @@ public class WorkServiceHibernateImplTest {
 		System.out.println("id = " + id);
 		assertNotNull(id);
 	
-	}	
+	}
+	
+	@Test
+	public void testIfIdsGetFilledIn(){
+		Work work = new Work();
+		work.setCreator("picasso");
+		work.setTitle("guernica");
+		
+		assertEquals(null, work.getId());
+		
+		Long id = workService.insertOrUpdate(work);
+		
+		assertNotNull(id);
+		assertEquals(id, work.getId());
+	}
 }
