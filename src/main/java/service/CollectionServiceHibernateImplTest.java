@@ -51,18 +51,28 @@ public class CollectionServiceHibernateImplTest {
 		Work w3 = new Work("daiseys 3", "manot");
 		workService.insertOrUpdate(w3);
 		
-		
-		
 		Collection col = new Collection("manot");
 		col.addWork(w1);
 		col.addWork(w2);
 		col.addWork(w3);
 		
 		Long id = collecionService.insertOrUpdate(col);
-		
 		Collection found = collecionService.getById(id);
 		
 		assertEquals(3, found.getWorks().size());
 		assertEquals("manot", found.getWorks().get(0).getCreator());
+	}
+	
+	@Test
+	public void testGettingCollectionByName(){
+		Collection col = new Collection();
+		col.setName("uniqueCol");
+		
+		collecionService.insertOrUpdate(col);
+		
+		Collection found = collecionService.getByName("uniqueCol");
+		
+		assertEquals(col.getId(), found.getId());
+		
 	}
 }

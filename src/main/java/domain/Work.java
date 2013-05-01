@@ -165,7 +165,7 @@ public class Work {
 		this.workId = werkid;
 	}
 
-	@Column
+	@Column(name="title")
 	public String getTitle() {
 		return this.title;
 	}
