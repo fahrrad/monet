@@ -1,5 +1,7 @@
 package service;
 
+import java.util.List;
+
 import domain.Collection;
 
 public interface ICollecionService {
@@ -12,4 +14,5 @@ public interface ICollecionService {
 	
 	public void delete(Long id);
 
+	List<Collection> getAll();
 }

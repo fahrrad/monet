@@ -83,7 +83,6 @@ public class Collection {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((works == null) ? 0 : works.hashCode());
 		return result;
 	}
 
@@ -101,12 +100,9 @@ public class Collection {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (works == null) {
-			if (other.works != null)
-				return false;
-		} else if (!works.equals(other.works))
-			return false;
 		return true;
 	}
+
+
 
 }

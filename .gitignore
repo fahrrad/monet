@@ -4,3 +4,5 @@
 .springBeans
 .project
 target/*
+sherwin.h2.db
+sherwin.trace.db
