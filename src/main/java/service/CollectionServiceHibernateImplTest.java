@@ -64,8 +64,5 @@ public class CollectionServiceHibernateImplTest {
 		
 		assertEquals(3, found.getWorks().size());
 		assertEquals("manot", found.getWorks().get(0).getCreator());
-		
-		
 	}
-
 }

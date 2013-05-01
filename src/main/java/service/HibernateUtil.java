@@ -4,6 +4,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import domain.Collection;
+import domain.Werk;
 import domain.Work;
 
 @SuppressWarnings("deprecation")
