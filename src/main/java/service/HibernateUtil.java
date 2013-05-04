@@ -8,23 +8,21 @@ import domain.Work;
 
 @SuppressWarnings("deprecation")
 public class HibernateUtil {
-	
+
 	private static final SessionFactory sessionFactory;
-	
-	static{
-		try{
+
+	static {
+		try {
 			sessionFactory = new AnnotationConfiguration().configure()
-					.addPackage("domain")
-					.addAnnotatedClass(Work.class)
-					.addAnnotatedClass(Collection.class)
-					.buildSessionFactory();
-		}catch(Throwable ex){
+					.addPackage("domain").addAnnotatedClass(Work.class)
+					.addAnnotatedClass(Collection.class).buildSessionFactory();
+		} catch (Throwable ex) {
 			System.err.println("Cannot create sessionFactory." + ex);
 			throw new ExceptionInInitializerError(ex);
 		}
 	}
-	
-	public static SessionFactory getSessionFactory(){
+
+	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 }

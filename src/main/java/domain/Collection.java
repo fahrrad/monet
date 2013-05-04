@@ -26,25 +26,25 @@ import org.hibernate.annotations.FetchMode;
  */
 
 @Entity
-@Table(name="collection")
+@Table(name = "collection")
 public class Collection {
 
 	private Long id;
 
 	private String name;
-	
+
 	private List<Work> works = new ArrayList<Work>();
 
-	public Collection(){
-		
+	public Collection() {
+
 	}
-	
+
 	public Collection(String name) {
 		setName(name);
 	}
 
 	@ManyToMany()
-	@JoinTable(name="werken_collecties" )
+	@JoinTable(name = "werken_collecties")
 	@Fetch(FetchMode.JOIN)
 	public List<Work> getWorks() {
 		return works;
@@ -53,13 +53,13 @@ public class Collection {
 	public void setWorks(List<Work> works) {
 		this.works = works;
 	}
-	
-	public void addWork(Work work){
+
+	public void addWork(Work work) {
 		this.works.add(work);
 	}
 
 	@Id
-	@Column(name="collection_Id")
+	@Column(name = "collection_Id")
 	@GeneratedValue
 	public Long getId() {
 		return id;
@@ -69,7 +69,7 @@ public class Collection {
 		this.id = id;
 	}
 
-	@Column(name="name")
+	@Column(name = "name", unique=true)
 	public String getName() {
 		return name;
 	}
@@ -102,7 +102,4 @@ public class Collection {
 			return false;
 		return true;
 	}
-
-
-
 }

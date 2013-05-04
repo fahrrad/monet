@@ -32,6 +32,9 @@ public class CollectionController implements Initializable {
 	@FXML
 	private Button addButton;
 
+	@FXML
+	private Button deleteButton;
+
 	// items of the list
 	ObservableList<String> items = FXCollections.observableArrayList();
 
@@ -58,10 +61,11 @@ public class CollectionController implements Initializable {
 					root.getChildren().add(pane);
 					stage.setScene(scene);
 
-					stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					stage.setOnHidden(new EventHandler<WindowEvent>() {
 
 						@Override
 						public void handle(WindowEvent event) {
+							System.out.println("reloading all the collections");
 							loadAllCollections();
 						}
 					});
@@ -73,12 +77,27 @@ public class CollectionController implements Initializable {
 				}
 			}
 		});
+
+		// adding delete action
+		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				String selectedCol = collectionList.getSelectionModel()
+						.getSelectedItem();
+
+				if (selectedCol != null) {
+					Collection collection = collectionService
+							.getByName(selectedCol);
+					collectionService.delete(collection.getId());
+					items.remove(selectedCol);
+				}
+			}
+		});
 	}
 
 	private void loadAllCollections() {
-		for (Collection col : collectionService.getAll()) {
-			System.out.println("adding " + col);
-			items.add(col.getName());
-		}
+		items.clear();
+		items.addAll(collectionService.getAllNames());
 	}
 }

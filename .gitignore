@@ -1,4 +1,5 @@
 *.class
+<<<<<<< HEAD
 .classpath
 .settings/*
 .springBeans
@@ -6,3 +7,10 @@
 target/*
 sherwin.h2.db
 sherwin.trace.db
+=======
+
+# Package Files #
+*.jar
+*.war
+*.ear
+>>>>>>> 1da0544097e848bcb9ba7327a940636821db5cb4

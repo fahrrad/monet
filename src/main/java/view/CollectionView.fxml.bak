@@ -2,15 +2,27 @@
 
 <?import java.lang.*?>
 <?import java.util.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.CollectionController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.CollectionController">
   <children>
     <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <bottom>
+        <HBox minHeight="28.0" prefHeight="41.0" prefWidth="600.0">
+          <children>
+            <Button fx:id="addButton" mnemonicParsing="false" text="Add" />
+            <Button mnemonicParsing="false" text="delete" />
+          </children>
+          <padding>
+            <Insets bottom="10.0" left="2.0" right="10.0" top="2.0" />
+          </padding>
+        </HBox>
+      </bottom>
       <left>
-        <ListView fx:id="collectionList" prefHeight="200.0" prefWidth="200.0" />
+        <ListView fx:id="collectionList" prefHeight="323.0" prefWidth="202.0" />
       </left>
     </BorderPane>
   </children>

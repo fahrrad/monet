@@ -14,7 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-@Entity(name="Werken")
+@Entity(name = "Werken")
 public class Work {
 
 	private Long workId;
@@ -30,10 +30,9 @@ public class Work {
 	private String adresEigenaar;
 	private String VorigeEigenaar;
 	private String personen;
-	
 
 	@ManyToMany
-	@JoinTable(name="WerkenCollecties" )
+	@JoinTable(name = "WerkenCollecties")
 	private Set<Collection> collecties = new HashSet<Collection>();
 
 	public Work() {
@@ -50,8 +49,8 @@ public class Work {
 		VorigeEigenaar = "";
 		personen = "";
 	}
-	
-	public Work(String title, String creator){
+
+	public Work(String title, String creator) {
 		this();
 		setTitle(title);
 		setCreator(creator);
@@ -108,7 +107,6 @@ public class Work {
 		this.datum = datum;
 	}
 
-	
 	@Column
 	public double getHoogte() {
 		return hoogte;
@@ -145,7 +143,6 @@ public class Work {
 		this.personen = personen;
 	}
 
-	
 	@Column
 	public String getThema() {
 		return thema;
@@ -165,7 +162,7 @@ public class Work {
 		this.workId = werkid;
 	}
 
-	@Column(name="title")
+	@Column(name = "title" )
 	public String getTitle() {
 		return this.title;
 	}
@@ -284,6 +281,5 @@ public class Work {
 			return false;
 		return true;
 	}
-	
-	
+
 }

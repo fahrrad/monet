@@ -10,22 +10,20 @@ import domain.Work;
 
 public class WorkServiceHibernateImpl implements IWorkService {
 
-	
-
 	@Override
 	public Work getById(Long id) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transaction = null;
 		Work work = null;
-		try{
+		try {
 			transaction = session.beginTransaction();
-			
+
 			work = (Work) session.byId(Work.class).load(id);
-			
-		}catch (HibernateException ex){
+
+		} catch (HibernateException ex) {
 			transaction.rollback();
 			ex.printStackTrace();
-		}finally{
+		} finally {
 			session.close();
 		}
 		return work;
@@ -42,17 +40,17 @@ public class WorkServiceHibernateImpl implements IWorkService {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transaction = null;
 		Long workId = null;
-		
-		try{
+
+		try {
 			transaction = session.beginTransaction();
 			workId = (Long) session.save(work);
 			transaction.commit();
 
 			System.out.println("saved work: with id" + workId);
-		}catch (HibernateException ex){
+		} catch (HibernateException ex) {
 			ex.printStackTrace();
 			transaction.rollback();
-		}finally{
+		} finally {
 			session.close();
 		}
 		return workId;

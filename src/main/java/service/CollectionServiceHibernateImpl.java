@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -35,11 +36,16 @@ public class CollectionServiceHibernateImpl implements ICollecionService {
 		Long id = null;
 		try {
 			session.beginTransaction();
-			id = (Long) session.save(collection);
+			if (collection.getId() == null || collection.getId() == 0) {
+				id = (Long) session.save(collection);
+			} else {
+				session.update(collection);
+			}
 			session.getTransaction().commit();
 		} catch (HibernateException ex) {
 			ex.printStackTrace();
 			session.getTransaction().rollback();
+			throw ex;
 		} finally {
 			session.close();
 		}
@@ -69,8 +75,22 @@ public class CollectionServiceHibernateImpl implements ICollecionService {
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
+		Session session = HibernateUtil.getSessionFactory().openSession();
 
+		try {
+			session.beginTransaction();
+
+			Collection collection = (Collection) session.byId(Collection.class)
+					.load(id);
+			session.delete(collection);
+
+			session.getTransaction().commit();
+		} catch (HibernateException ex) {
+			ex.printStackTrace();
+			session.getTransaction().rollback();
+		} finally {
+			session.close();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -91,5 +111,15 @@ public class CollectionServiceHibernateImpl implements ICollecionService {
 			session.close();
 		}
 		return collections;
+	}
+	
+	
+	@Override
+	public List<String> getAllNames() {		
+		List<String> collectionNames = new ArrayList<String>();
+		for(Collection c : getAll()){
+			collectionNames.add(c.getName());
+		}
+		return collectionNames;
 	}
 }
