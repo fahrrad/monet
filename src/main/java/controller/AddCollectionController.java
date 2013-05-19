@@ -51,7 +51,6 @@ public class AddCollectionController implements Initializable {
 				stage.close();
 			}
 		});
-
 	}
 
 }

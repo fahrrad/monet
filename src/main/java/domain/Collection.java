@@ -69,7 +69,7 @@ public class Collection {
 		this.id = id;
 	}
 
-	@Column(name = "name", unique=true)
+	@Column(name = "name", unique=true, nullable=false)
 	public String getName() {
 		return name;
 	}
