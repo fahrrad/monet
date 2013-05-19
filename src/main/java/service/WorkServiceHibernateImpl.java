@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
 
 import domain.Work;
 
@@ -60,5 +61,26 @@ public class WorkServiceHibernateImpl implements IWorkService {
 	public void delete(Integer id) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Work> getAll() {
+		Session session = HibernateUtil.getSessionFactory().openSession();		
+		List<Work> workList = null;
+		
+		try{
+			session.beginTransaction();
+			workList = session.createCriteria(Work.class).addOrder(Order.desc("title"))
+					.list();
+			
+		}catch(HibernateException ex ){
+			ex.printStackTrace();
+			session.getTransaction().rollback();
+			throw ex;
+		}finally{
+			session.close();
+		}
+		return workList;
 	}
 }

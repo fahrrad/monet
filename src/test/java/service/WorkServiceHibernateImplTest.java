@@ -58,4 +58,28 @@ public class WorkServiceHibernateImplTest {
 		assertNotNull(id);
 		assertEquals(id, work.getId());
 	}
+	
+	
+	@Test
+	public void testGetAllWork(){
+		Work work = new Work();
+		work.setCreator("picasso");
+		work.setTitle("guernica");
+		
+		Work work2 = new Work();
+		work2.setCreator("picasso");
+		work2.setTitle("guernica");
+		
+		Work work3 = new Work();
+		work3.setCreator("picasso");
+		work3.setTitle("guernica");
+		
+		workService.insertOrUpdate(work);
+		workService.insertOrUpdate(work2);
+		workService.insertOrUpdate(work3);
+		
+		int workCount = workService.getAll().size();
+		
+		assertTrue(workCount >= 3 );
+	}
 }

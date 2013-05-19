@@ -46,5 +46,10 @@ public interface IWorkService {
 	 * @param id
 	 */
 	public void delete(Integer id);
+	
+	/**
+	 * @return a list of all the works in the database
+	 */
+	public List<Work> getAll();
 
 }
