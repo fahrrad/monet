@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
@@ -37,6 +38,9 @@ public class WorkListController implements Initializable {
 	
 	@FXML private Button filterButton;
 	
+	@FXML private Button clearButton;
+	
+	@FXML private Accordion accordion;
 	/**
 	 * services
 	 */
@@ -74,6 +78,18 @@ public class WorkListController implements Initializable {
 		
 		// adding action handlers
 		filterButton.setOnAction(new FilterEventHandler());
+		clearButton.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				titleTextField.setText("");
+				creatorTextField.setText("");
+				collectionChoiceBox.getSelectionModel().clearSelection();
+				
+				loadAllWork();
+				
+			}
+		});
 	}
 	
 	private class FilterEventHandler implements EventHandler<ActionEvent>{
