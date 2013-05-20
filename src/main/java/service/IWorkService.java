@@ -51,5 +51,13 @@ public interface IWorkService {
 	 * @return a list of all the works in the database
 	 */
 	public List<Work> getAll();
+	
+	/**
+	 * Returns the result of the query.
+	 * 
+	 * @param hqlQuery query to execute
+	 * @return
+	 */
+	public List<Work> getByQuery(String hqlQuery);
 
 }

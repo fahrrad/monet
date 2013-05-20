@@ -83,4 +83,24 @@ public class WorkServiceHibernateImpl implements IWorkService {
 		}
 		return workList;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Work> getByQuery(String hqlQuery) {
+		Session session = HibernateUtil.getSessionFactory().openSession();		
+		List<Work> workList = null;
+		
+		try{
+			session.beginTransaction();
+			workList = session.createQuery(hqlQuery).list();
+			
+		}catch(HibernateException ex ){
+			ex.printStackTrace();
+			session.getTransaction().rollback();
+			throw ex;
+		}finally{
+			session.close();
+		}
+		return workList;
+	}
 }

@@ -82,4 +82,27 @@ public class WorkServiceHibernateImplTest {
 		
 		assertTrue(workCount >= 3 );
 	}
+	
+	
+	@Test
+	public void testGetByQuery(){
+		Work work = new Work();
+		work.setCreator("picasso");
+		work.setTitle("guernica");
+		
+		Work work2 = new Work();
+		work2.setCreator("dali");
+		work2.setTitle("rozen");
+		
+		Work work3 = new Work();
+		work3.setCreator("ward");
+		work3.setTitle("aurore at night");
+		
+		long id1 = workService.insertOrUpdate(work);
+		long id2 = workService.insertOrUpdate(work2);
+		long id3 = workService.insertOrUpdate(work3);
+		
+		int workCount = workService.getByQuery("from Work where title like '%aurore%'").size();
+		assertTrue(workCount == 1 );
+	}
 }

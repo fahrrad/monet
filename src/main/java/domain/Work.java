@@ -14,7 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-@Entity(name = "Werken")
+@Entity(name = "Work")
 public class Work {
 
 	private Long workId;
@@ -31,8 +31,6 @@ public class Work {
 	private String VorigeEigenaar;
 	private String personen;
 
-	@ManyToMany
-	@JoinTable(name = "WerkenCollecties")
 	private Set<Collection> collecties = new HashSet<Collection>();
 
 	public Work() {
@@ -178,6 +176,17 @@ public class Work {
 
 	public void setCreator(String creator) {
 		this.creator = creator;
+	}
+	
+	
+	@ManyToMany
+	@JoinTable(name = "WerkenCollecties")
+	public Set<Collection> getCollecties() {
+		return collecties;
+	}
+
+	public void setCollecties(Set<Collection> collecties) {
+		this.collecties = collecties;
 	}
 
 	@Override
