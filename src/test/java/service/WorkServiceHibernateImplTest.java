@@ -2,6 +2,7 @@ package service;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -14,6 +15,34 @@ public class WorkServiceHibernateImplTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		workService = new WorkServiceHibernateImpl();
+	}
+	
+	@Before
+	public void setup(){
+		for(Work work : workService.getAll()){
+			workService.delete(work.getId());
+		}
+		
+	}
+	
+	@Test
+	public void testdelete(){
+		Work work = new Work();
+		work.setCreator("picasso2");
+		work.setTitle("guernica2");
+		
+		Long id = workService.insertOrUpdate(work);
+		
+		assertNotNull(id);
+		
+		workService.delete(id);
+		
+		Work found = workService.getById(id);
+		System.out.println(found);
+		
+		assertNull(found);
+		
+		
 	}
 
 	@Test
@@ -84,6 +113,7 @@ public class WorkServiceHibernateImplTest {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	@Test
 	public void testGetByQuery(){
 		Work work = new Work();

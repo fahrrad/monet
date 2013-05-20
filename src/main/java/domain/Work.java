@@ -14,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity(name = "Work")
 public class Work {
 
@@ -181,6 +184,7 @@ public class Work {
 	
 	@ManyToMany
 	@JoinTable(name = "WerkenCollecties")
+	@Fetch(FetchMode.JOIN)
 	public Set<Collection> getCollecties() {
 		return collecties;
 	}

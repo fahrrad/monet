@@ -58,8 +58,24 @@ public class WorkServiceHibernateImpl implements IWorkService {
 	}
 
 	@Override
-	public void delete(Integer id) {
-		// TODO Auto-generated method stub
+	public void delete(Long id) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction transaction = null;
+
+		try {
+			transaction = session.beginTransaction();
+			Work work = (Work) session.byId(Work.class).load(id);
+			session.delete(work);
+			
+			transaction.commit();
+
+			System.out.println("deleted work: with id" + id);
+		} catch (HibernateException ex) {
+			ex.printStackTrace();
+			transaction.rollback();
+		} finally {
+			session.close();
+		}
 
 	}
 
