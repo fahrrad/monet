@@ -11,3 +11,4 @@ sherwin.trace.db
 *.jar
 *.war
 *.ear
+/target
