@@ -2,6 +2,7 @@
 
 <?import java.lang.*?>
 <?import java.util.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
@@ -12,14 +13,59 @@
       <bottom>
         <ToolBar>
           <items>
-            <Button mnemonicParsing="false" text="Button" />
+            <Button fx:id="addButton" mnemonicParsing="false" text="+" />
+            <Button fx:id="delButton" mnemonicParsing="false" prefWidth="29.0" text="-" />
           </items>
         </ToolBar>
       </bottom>
       <center>
         <Accordion fx:id="Accordion">
           <expandedPane>
-            <TitledPane fx:id="x1" animated="false" text="Werken">
+            <TitledPane fx:id="x1" animated="false" text="Filter">
+              <content>
+                <AnchorPane id="Content" fx:id="FilterPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <HBox prefHeight="649.0" prefWidth="570.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                      <children>
+                        <VBox fx:id="FilterBoxLeft" prefHeight="649.0" prefWidth="285.0">
+                          <children>
+                            <Label prefHeight="21.0" prefWidth="128.0" text="Titel" />
+                            <TextField id="titleTextBox" fx:id="titleTextField" prefWidth="200.0" />
+                            <Separator prefHeight="24.0" prefWidth="284.0" />
+                            <Label prefHeight="21.0" prefWidth="128.0" text="Kunstenaar" />
+                            <TextField id="titleTextBox" fx:id="creatorTextField" prefWidth="200.0" />
+                            <Separator prefHeight="24.0" prefWidth="284.0" />
+                            <Label prefHeight="21.0" prefWidth="128.0" text="Collectie" />
+                            <Separator prefHeight="24.0" prefWidth="284.0" />
+                            <ChoiceBox id="collectionDropDown" fx:id="collectionChoiceBox" prefWidth="285.0">
+                              <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                  <String fx:value="Item 1" />
+                                  <String fx:value="Item 2" />
+                                  <String fx:value="Item 3" />
+                                </FXCollections>
+                              </items>
+                            </ChoiceBox>
+                            <Separator orientation="VERTICAL" prefHeight="420.0" prefWidth="284.0" />
+                            <HBox prefHeight="24.0" prefWidth="285.0">
+                              <children>
+                                <Button fx:id="filterButton" mnemonicParsing="false" text="Filter" />
+                              </children>
+                            </HBox>
+                          </children>
+                        </VBox>
+                        <Separator orientation="VERTICAL" prefHeight="649.0" prefWidth="14.0" />
+                        <VBox prefHeight="649.0" prefWidth="271.0" />
+                      </children>
+                    </HBox>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
+            <fx:reference source="x1" />
+            <TitledPane animated="false" text="Werken">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
@@ -28,23 +74,6 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-          </expandedPane>
-          <panes>
-            <TitledPane animated="false" text="Filter">
-              <content>
-                <AnchorPane id="Content" fx:id="FilterPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <HBox prefHeight="649.0" prefWidth="570.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <children>
-                        <VBox fx:id="FilterBoxLeft" prefHeight="649.0" prefWidth="285.0" />
-                        <VBox fx:id="FitlerBoxRight" prefHeight="649.0" prefWidth="287.0" />
-                      </children>
-                    </HBox>
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
-            <fx:reference source="x1" />
           </panes>
         </Accordion>
       </center>
