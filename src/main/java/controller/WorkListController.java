@@ -123,7 +123,13 @@ public class WorkListController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
-
+				Work newWork = new Work();
+				try {
+					WorkView.getInstance().show();
+					WorkView.getController().setWork(newWork);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -131,17 +137,15 @@ public class WorkListController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
-				Stage workViewStage = new Stage();
+				Stage workViewStage;
 				Work work = workList.getSelectionModel().getSelectedItem();
 
 				if (work != null) {
 					try {
-
-						workViewStage.setScene(WorkView.getInstance());
+						workViewStage = WorkView.getInstance();
 						workViewStage.show();
 						WorkView.getController().setWork(work);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 public class WorkView extends Application {
 	
-	private static Scene instance;
+	private static Stage instance;
 	
 	private static FXMLLoader loader = new FXMLLoader();
 	static {
@@ -25,20 +25,19 @@ public class WorkView extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Scene scene = getInstance();
-		primaryStage.setScene(scene);
+		Stage stage = getInstance();
+		primaryStage.setScene(stage.getScene());
 		primaryStage.show();
 	}
 	
-	public static Scene getInstance() throws IOException{
-		Scene scene = null;
+	public static Stage getInstance() throws IOException{
+		Stage stage = null;
 		if(instance == null){
 			Parent workView = (Parent) loader.load();
-			scene = new Scene(workView);
+			stage = new Stage();
+			stage.setScene(new Scene(workView));
+			instance = stage;
 		}
-		
-		instance = scene;
-		
 		return instance;
 	}
 	

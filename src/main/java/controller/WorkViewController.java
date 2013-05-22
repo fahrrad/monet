@@ -1,61 +1,203 @@
 package controller;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import service.CollectionServiceHibernateImpl;
+import service.ICollecionService;
+import service.IWorkService;
+import service.WorkServiceHibernateImpl;
+
+import com.sun.javafx.svgpath.parser.ParseException;
+
+import domain.Collection;
 import domain.Work;
 
 public class WorkViewController implements Initializable {
 	
+	private final ICollecionService collectionService = new CollectionServiceHibernateImpl();
+
+	private static final int LABEL_WIDTH = 105;
+	private static final int TEXT_WIDTH = 150;
+
+	private Map<String, TextInputControl> propertiesMap = new HashMap<String, TextInputControl>();
+	
 	private Work work = new Work();
 	
-	@FXML
-	private Label titleLabel;
-	
-	@FXML
-	private VBox propertiesVBox;
+	@SuppressWarnings("unused")
+	private boolean changed = false;
 
-	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	@FXML private VBox propertiesVBox;
+	
+	@FXML private Button saveButton; 
+	
+	@FXML private ImageView imageView;
+
+	private class saveThread extends Thread{
+		final private Work work;
+		private final IWorkService workService = new WorkServiceHibernateImpl();
 		
+		public saveThread(Work workToSave){
+			work = workToSave; 
+		}
+
+		@Override
+		public void run() {
+			workService.insertOrUpdate(work);
+			
+		}	
 	}
 	
-	private void addProperties(){
+	
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		saveButton.setDisable(true);
+		saveButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				Work work = new Work();
+				work.setTitle(propertiesMap.get("Titel").getText());
+				work.setCreator(propertiesMap.get("Kunstenaar").getText());
+				work.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText()));
+				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
+				work.setMedium(propertiesMap.get("Medium").getText());
+				work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
+// 				work.setDatum(new Date(Long.valueOf(propertiesMap.get("Vorige Eigenaar").getText()), 1, 1).to);
+				
+				new saveThread(work).start();
+			}
+		});
+		
+		imageView.setImage(new Image("http://cache-www.coderanch.com/mooseImages/moosefly.gif"));
+		HBox.setHgrow(imageView, Priority.ALWAYS);
+	}
+
+	private void addProperties() {
 		addPropertyToBox("Titel", work.getTitle());
 		addPropertyToBox("Kunstenaar", work.getCreator());
 		addPropertyToBox("Breedte", String.valueOf(work.getBreedte()));
 		addPropertyToBox("Hoogte", String.valueOf(work.getHoogte()));
+		addPropertyToBox("Medium", work.getMedium());
+		addPropertyToBox("Vorige Eigenaar", work.getVorigeEigenaar());
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy");
+		
+		try {
+			String formattedDate = dateFormatter.format(work.getDatum()
+					.getTime());
+			addPropertyToBox("Datum", formattedDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		addPropertyToBox("Thema", work.getThema());
+		addPropertyToBox("personen", work.getPersonen(),2);
+
+		
+		addPropertyToBox("Opmerking", work.getOpmerking(), 3);
+		
+		// collection ComboBox
+		HBox hbox = new HBox();
+		hbox.setPadding(new Insets(5, 10, 5, 12));
+		hbox.setSpacing(20);
+
+		Label label = new Label();
+		label.setText("Collection");
+		label.setMaxWidth(LABEL_WIDTH);
+		label.setMinWidth(LABEL_WIDTH);
+		
+		ChoiceBox<Collection> collections = new ChoiceBox<>(FXCollections.observableArrayList(collectionService.getAll()));
+		hbox.getChildren().addAll(label, collections);
+		propertiesVBox.getChildren().add(hbox);
+		
 	}
 	
-	
-	public void setWork(Work work){
+	private void setChanged(boolean changed){
+		this.changed = changed;
+		saveButton.setDisable(!changed);
+	}
+
+	public void setWork(Work work) {
 		this.work = work;
 		update();
+		setChanged(false);
 	}
-	
-	
-	private void update(){
+
+	private void update() {
 		propertiesVBox.getChildren().clear();
 		addProperties();
 	}
-	
-	
-	private void addPropertyToBox(String name, String value){
+
+	private void addPropertyToBox(String name, String value, int rowCount) {
 		HBox hbox = new HBox();
+		hbox.setPadding(new Insets(5, 10, 5, 12));
 		hbox.setSpacing(20);
-		
+
 		Label label = new Label();
 		label.setText(name);
-		
-		TextField textField = new TextField(value);
-		
-		hbox.getChildren().addAll(label, textField);
+		label.setMaxWidth(LABEL_WIDTH);
+		label.setMinWidth(LABEL_WIDTH);
+
+		if (rowCount == 1) {
+			TextField textField = new TextField(value);
+			textField.setAlignment(Pos.CENTER_RIGHT);
+			textField.setMinWidth(TEXT_WIDTH);
+			textField.setMaxWidth(TEXT_WIDTH);
+			textField.setMinHeight(20);
+			textField.textProperty().addListener(new InvalidationListener() {
+				
+				@Override
+				public void invalidated(Observable observable) {
+					setChanged(true);
+				}
+			});
+			propertiesMap.put(name, textField);
+			hbox.getChildren().addAll(label, textField);
+		} else {
+			TextArea textArea = new TextArea();
+			textArea.setPrefRowCount(rowCount);
+			textArea.setMinWidth(TEXT_WIDTH);
+			textArea.setMaxWidth(TEXT_WIDTH);
+			
+			textArea.setMinHeight(20 * rowCount);
+			textArea.textProperty().addListener(new InvalidationListener() {
+				
+				@Override
+				public void invalidated(Observable observable) {
+					setChanged(true);
+				}
+			});
+			propertiesMap.put(name, textArea);
+			hbox.getChildren().addAll(label, textArea);
+		}
+
 		propertiesVBox.getChildren().add(hbox);
+		VBox.setVgrow(hbox, Priority.NEVER);
+	}
+
+	private void addPropertyToBox(String name, String value) {
+		addPropertyToBox(name, value, 1);
 	}
 }
