@@ -44,7 +44,11 @@ public class WorkServiceHibernateImpl implements IWorkService {
 
 		try {
 			transaction = session.beginTransaction();
-			workId = (Long) session.save(work);
+			if (work.getId() == null) {
+				workId = (Long) session.save(work);
+			} else {
+				session.update(work);
+			}
 			transaction.commit();
 
 			System.out.println("saved work: with id" + workId);
@@ -66,7 +70,7 @@ public class WorkServiceHibernateImpl implements IWorkService {
 			transaction = session.beginTransaction();
 			Work work = (Work) session.byId(Work.class).load(id);
 			session.delete(work);
-			
+
 			transaction.commit();
 
 			System.out.println("deleted work: with id" + id);
@@ -82,19 +86,19 @@ public class WorkServiceHibernateImpl implements IWorkService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Work> getAll() {
-		Session session = HibernateUtil.getSessionFactory().openSession();		
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		List<Work> workList = null;
-		
-		try{
+
+		try {
 			session.beginTransaction();
-			workList = session.createCriteria(Work.class).addOrder(Order.desc("title"))
-					.list();
-			
-		}catch(HibernateException ex ){
+			workList = session.createCriteria(Work.class)
+					.addOrder(Order.desc("title")).list();
+
+		} catch (HibernateException ex) {
 			ex.printStackTrace();
 			session.getTransaction().rollback();
 			throw ex;
-		}finally{
+		} finally {
 			session.close();
 		}
 		return workList;
@@ -103,18 +107,18 @@ public class WorkServiceHibernateImpl implements IWorkService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Work> getByQuery(String hqlQuery) {
-		Session session = HibernateUtil.getSessionFactory().openSession();		
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		List<Work> workList = null;
-		
-		try{
+
+		try {
 			session.beginTransaction();
 			workList = session.createQuery(hqlQuery).list();
-			
-		}catch(HibernateException ex ){
+
+		} catch (HibernateException ex) {
 			ex.printStackTrace();
 			session.getTransaction().rollback();
 			throw ex;
-		}finally{
+		} finally {
 			session.close();
 		}
 		return workList;

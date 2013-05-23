@@ -75,16 +75,20 @@ public class WorkViewController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
-				Work work = new Work();
-				work.setTitle(propertiesMap.get("Titel").getText());
-				work.setCreator(propertiesMap.get("Kunstenaar").getText());
-				work.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText()));
-				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
-				work.setMedium(propertiesMap.get("Medium").getText());
-				work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
- 				work.setJaar(Integer.valueOf(propertiesMap.get("Datum").getText()));
+				Work workToSave = new Work();
+				workToSave.setId(work.getId());
+				workToSave.setTitle(propertiesMap.get("Titel").getText());
+				workToSave.setCreator(propertiesMap.get("Kunstenaar").getText());
+				workToSave.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText()));
+				workToSave.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
+				workToSave.setMedium(propertiesMap.get("Medium").getText());
+				workToSave.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
+ 				workToSave.setJaar(Integer.valueOf(propertiesMap.get("Jaar").getText()));
+ 				workToSave.setThema(propertiesMap.get("Thema").getText());
+ 				workToSave.setPersonen(propertiesMap.get("Personen").getText());
+ 				workToSave.setOpmerking(propertiesMap.get("Opmerking").getText());
 				
-				new saveThread(work).start();
+				new saveThread(workToSave).start();
 			}
 		});
 		
@@ -101,7 +105,7 @@ public class WorkViewController implements Initializable {
 		addPropertyToBox("Vorige Eigenaar", work.getVorigeEigenaar());
 		addPropertyToBox("Jaar", String.valueOf(work.getJaar()));
 		addPropertyToBox("Thema", work.getThema());
-		addPropertyToBox("personen", work.getPersonen(),2); 
+		addPropertyToBox("Personen", work.getPersonen(),2); 
 
 		
 		addPropertyToBox("Opmerking", work.getOpmerking(), 3);
