@@ -2,8 +2,6 @@ package domain;
 
 // Generated 6-feb-2012 9:19:46 by Hibernate Tools 3.2.1.GA
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +23,7 @@ public class Work {
 	private String creator;
 	private double hoogte;
 	private double breedte;
-	private Calendar datum;
+	private int jaar;
 	private String thema;
 	private String medium;
 	private String afbeeldingspad;
@@ -41,7 +39,7 @@ public class Work {
 		creator = "";
 		hoogte = 0.0;
 		breedte = 0.0;
-		datum = new GregorianCalendar(0, 1, 1);
+		jaar = 1900;
 		thema = "";
 		medium = "";
 		afbeeldingspad = "";
@@ -100,12 +98,12 @@ public class Work {
 	}
 
 	@Column
-	public Calendar getDatum() {
-		return datum;
+	public int getJaar() {
+		return jaar;
 	}
 
-	public void setDatum(Calendar datum) {
-		this.datum = datum;
+	public void setJaar(int datum) {
+		this.jaar = datum;
 	}
 
 	@Column
@@ -209,9 +207,9 @@ public class Work {
 		result = prime * result
 				+ ((collecties == null) ? 0 : collecties.hashCode());
 		result = prime * result + ((creator == null) ? 0 : creator.hashCode());
-		result = prime * result + ((datum == null) ? 0 : datum.hashCode());
 		temp = Double.doubleToLongBits(hoogte);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + jaar;
 		result = prime * result + ((medium == null) ? 0 : medium.hashCode());
 		result = prime * result
 				+ ((opmerking == null) ? 0 : opmerking.hashCode());
@@ -259,13 +257,10 @@ public class Work {
 				return false;
 		} else if (!creator.equals(other.creator))
 			return false;
-		if (datum == null) {
-			if (other.datum != null)
-				return false;
-		} else if (!datum.equals(other.datum))
-			return false;
 		if (Double.doubleToLongBits(hoogte) != Double
 				.doubleToLongBits(other.hoogte))
+			return false;
+		if (jaar != other.jaar)
 			return false;
 		if (medium == null) {
 			if (other.medium != null)
@@ -294,5 +289,4 @@ public class Work {
 			return false;
 		return true;
 	}
-
 }

@@ -1,10 +1,14 @@
 package service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.hibernate.HibernateException;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,6 +24,15 @@ public class CollectionServiceHibernateImplTest {
 	public static void setUpBeforeClass() throws Exception {
 		collecionService = new CollectionServiceHibernateImpl();
 		workService = new WorkServiceHibernateImpl();
+	}
+	
+	
+	@After
+	public void destroy(){
+		for(Collection col : collecionService.getAll()){
+			System.out.println("about to delete " + col.getId());
+			collecionService.delete(col.getId());
+		}
 	}
 
 	@Test
@@ -44,26 +57,37 @@ public class CollectionServiceHibernateImplTest {
 		assertEquals(col.getWorks().size(), found.getWorks().size());
 
 	}
-
+	
 	@Test
-	public void testSAvingWithWorks() {
-		Work w1 = new Work("daiseys", "manot");
-		workService.insertOrUpdate(w1);
-		Work w2 = new Work("daiseys 2", "manot");
-		workService.insertOrUpdate(w2);
-		Work w3 = new Work("daiseys 3", "manot");
-		workService.insertOrUpdate(w3);
-
-		Collection col = new Collection("manot");
-		col.addWork(w1);
-		col.addWork(w2);
-		col.addWork(w3);
+	public void testDeleteCollections(){
+		Collection col = new Collection();
+		col.setName("delete this collection");
 
 		Long id = collecionService.insertOrUpdate(col);
-		Collection found = collecionService.getById(id);
-
-		assertEquals(3, found.getWorks().size());
-		assertEquals("manot", found.getWorks().get(0).getCreator());
+		assertNotNull(id);
+		
+		collecionService.delete(id);
+		
+		col = collecionService.getById(id);
+		assertNull(col);
+	}
+	
+	@Test
+	public void testSavingWithWorks() {
+		Work w1 = new Work("title", "creator");
+		workService.insertOrUpdate(w1);
+		
+		Collection col = new Collection();
+		col.setName("test col");
+		collecionService.insertOrUpdate(col);
+		
+		col.addWork(w1);
+		collecionService.insertOrUpdate(col);
+		
+		Collection found = collecionService.getByName("test col");
+		assertEquals(1, found.getWorks().size());
+		assertEquals("Work should be what we put in", w1, found.getWorks().get(0));
+		
 	}
 
 	@Test
@@ -85,7 +109,7 @@ public class CollectionServiceHibernateImplTest {
 
 		collecionService.insertOrUpdate(col);
 		Collection col2 = new Collection();
-		col.setName("col33");
+		col2.setName("col33");
 
 		collecionService.insertOrUpdate(col2);
 

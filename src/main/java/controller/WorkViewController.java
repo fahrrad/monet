@@ -1,7 +1,6 @@
 package controller;
 
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -30,9 +29,6 @@ import service.CollectionServiceHibernateImpl;
 import service.ICollecionService;
 import service.IWorkService;
 import service.WorkServiceHibernateImpl;
-
-import com.sun.javafx.svgpath.parser.ParseException;
-
 import domain.Collection;
 import domain.Work;
 
@@ -86,7 +82,7 @@ public class WorkViewController implements Initializable {
 				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
 				work.setMedium(propertiesMap.get("Medium").getText());
 				work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
-// 				work.setDatum(new Date(Long.valueOf(propertiesMap.get("Vorige Eigenaar").getText()), 1, 1).to);
+ 				work.setJaar(Integer.valueOf(propertiesMap.get("Datum").getText()));
 				
 				new saveThread(work).start();
 			}
@@ -103,17 +99,9 @@ public class WorkViewController implements Initializable {
 		addPropertyToBox("Hoogte", String.valueOf(work.getHoogte()));
 		addPropertyToBox("Medium", work.getMedium());
 		addPropertyToBox("Vorige Eigenaar", work.getVorigeEigenaar());
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy");
-		
-		try {
-			String formattedDate = dateFormatter.format(work.getDatum()
-					.getTime());
-			addPropertyToBox("Datum", formattedDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		addPropertyToBox("Jaar", String.valueOf(work.getJaar()));
 		addPropertyToBox("Thema", work.getThema());
-		addPropertyToBox("personen", work.getPersonen(),2);
+		addPropertyToBox("personen", work.getPersonen(),2); 
 
 		
 		addPropertyToBox("Opmerking", work.getOpmerking(), 3);
