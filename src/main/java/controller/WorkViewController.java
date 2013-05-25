@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -34,15 +35,14 @@ import domain.Work;
 
 public class WorkViewController implements Initializable {
 	
+	// Services
 	private final ICollecionService collectionService = new CollectionServiceHibernateImpl();
-	
 	private final IWorkService workService = new WorkServiceHibernateImpl();
 
 	private static final int LABEL_WIDTH = 105;
 	private static final int TEXT_WIDTH = 150;
 
 	private Map<String, TextInputControl> propertiesMap = new HashMap<String, TextInputControl>();
-	
 	
 	private Work work = new Work();
 	
@@ -55,10 +55,10 @@ public class WorkViewController implements Initializable {
 	
 	@FXML private ImageView imageView;
 
-
+	// The caller will want to be refreshed when a new work is added
 	private WorkListController caller;
 
-	private class saveThread extends Thread{
+	private class saveThread extends Task<Void>{
 		final private Work work;
 		
 		public saveThread(Work workToSave){
@@ -66,11 +66,32 @@ public class WorkViewController implements Initializable {
 		}
 
 		@Override
-		public void run() {
+		protected Void call() throws Exception {
 			workService.insertOrUpdate(work);
-			
+			return null;
+		}
+
+		@Override
+		protected void succeeded() {
+			super.succeeded();
+			caller.loadAllWork();
 		}	
 		
+	}
+	
+	private class loadImage extends Task<Void>{
+
+		@Override
+		protected Void call() throws Exception {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		protected void succeeded() {
+			// TODO Auto-generated method stub
+			super.succeeded();
+		}
 	}
 	
 	
@@ -83,8 +104,8 @@ public class WorkViewController implements Initializable {
 			public void handle(ActionEvent event) {
 				work.setTitle(propertiesMap.get("Titel").getText());
 				work.setCreator(propertiesMap.get("Kunstenaar").getText());
-				work.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText()));
-				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
+				work.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText().replace(',','.')));
+				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText().replace(',','.')));
 				work.setMedium(propertiesMap.get("Medium").getText());
 				work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
  				work.setJaar(Integer.valueOf(propertiesMap.get("Jaar").getText()));
@@ -92,9 +113,7 @@ public class WorkViewController implements Initializable {
  				work.setPersonen(propertiesMap.get("Personen").getText());
  				work.setOpmerking(propertiesMap.get("Opmerking").getText());
 				
-				new saveThread(work).start();
-				
-				caller.loadAllWork();
+				new saveThread(work).run();
 			}
 		});
 		
