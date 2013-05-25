@@ -12,3 +12,6 @@ sherwin.trace.db
 *.war
 *.ear
 /target
+
+db*
+db/*
