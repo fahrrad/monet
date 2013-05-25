@@ -79,21 +79,6 @@ public class WorkViewController implements Initializable {
 		
 	}
 	
-	private class loadImage extends Task<Void>{
-
-		@Override
-		protected Void call() throws Exception {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		protected void succeeded() {
-			// TODO Auto-generated method stub
-			super.succeeded();
-		}
-	}
-	
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -112,16 +97,23 @@ public class WorkViewController implements Initializable {
  				work.setThema(propertiesMap.get("Thema").getText());
  				work.setPersonen(propertiesMap.get("Personen").getText());
  				work.setOpmerking(propertiesMap.get("Opmerking").getText());
+ 				work.setAfbeeldingspad(propertiesMap.get("AfbeeldingsPad").getText());
 				
 				new saveThread(work).run();
 			}
 		});
 		
-		imageView.setImage(new Image("http://cache-www.coderanch.com/mooseImages/moosefly.gif"));
+
 		HBox.setHgrow(imageView, Priority.ALWAYS);
 	}
 
 	private void addProperties() {
+		double imageViewHeight = imageView.getFitHeight();
+		double imageViewWidth = imageView.getFitWidth();
+		Image image = new Image(work.getAfbeeldingspad(), imageViewWidth, 
+				imageViewHeight, true, true, false);
+		
+		
 		addPropertyToBox("Titel", work.getTitle());
 		addPropertyToBox("Kunstenaar", work.getCreator());
 		addPropertyToBox("Breedte", String.valueOf(work.getBreedte()));
@@ -132,6 +124,7 @@ public class WorkViewController implements Initializable {
 		addPropertyToBox("Thema", work.getThema());
 		addPropertyToBox("Personen", work.getPersonen(),2); 
 		addPropertyToBox("Opmerking", work.getOpmerking(), 3);
+		addPropertyToBox("AfbeeldingsPad", work.getAfbeeldingspad());
 		
 		// collection ComboBox
 		HBox hbox = new HBox();
