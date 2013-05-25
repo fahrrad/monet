@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import service.CollectionServiceHibernateImpl;
 import service.ICollecionService;
 import service.IWorkService;
@@ -41,6 +43,8 @@ public class WorkViewController implements Initializable {
 
 	private static final int LABEL_WIDTH = 105;
 	private static final int TEXT_WIDTH = 150;
+	
+	private static final String SCANS_DIR = "C:/";
 
 	private Map<String, TextInputControl> propertiesMap = new HashMap<String, TextInputControl>();
 	
@@ -52,6 +56,8 @@ public class WorkViewController implements Initializable {
 	@FXML private VBox propertiesVBox;
 	
 	@FXML private Button saveButton; 
+	
+	@FXML private Button changeImageButton;
 	
 	@FXML private ImageView imageView;
 
@@ -103,15 +109,29 @@ public class WorkViewController implements Initializable {
 			}
 		});
 		
+		changeImageButton.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				FileChooser fileChooser= new FileChooser();
+				fileChooser.setInitialDirectory(new File(SCANS_DIR));
+				File imageFile = fileChooser.showOpenDialog(null);
+				
+				System.out.println(imageFile.getAbsolutePath());
+				propertiesMap.get("AfbeeldingsPad").setText(imageFile.getAbsolutePath());
+				work.setAfbeeldingspad(imageFile.getAbsolutePath());
+				
+				loadImage();
+				
+			}
+		});
 
 		HBox.setHgrow(imageView, Priority.ALWAYS);
 	}
+	
 
 	private void addProperties() {
-		double imageViewHeight = imageView.getFitHeight();
-		double imageViewWidth = imageView.getFitWidth();
-		Image image = new Image(work.getAfbeeldingspad(), imageViewWidth, 
-				imageViewHeight, true, true, false);
+		loadImage();
 		
 		
 		addPropertyToBox("Titel", work.getTitle());
@@ -140,6 +160,15 @@ public class WorkViewController implements Initializable {
 		hbox.getChildren().addAll(label, collections);
 		propertiesVBox.getChildren().add(hbox);
 		
+	}
+
+
+	private void loadImage() {
+		double imageViewHeight = imageView.getFitHeight();
+		double imageViewWidth = imageView.getFitWidth();
+		Image image = new Image(work.getAfbeeldingspad(), imageViewWidth, 
+				imageViewHeight, true, true, false);
+		imageView.setImage(image);
 	}
 	
 	private void setChanged(boolean changed){

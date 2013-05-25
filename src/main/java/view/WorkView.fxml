@@ -41,6 +41,11 @@
                         <ImageView id="image" fx:id="imageView" fitHeight="333.125" fitWidth="314.5" pickOnBounds="true" />
                       </children>
                     </StackPane>
+                    <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                      <children>
+                        <Button fx:id="changeImageButton" layoutX="277.0" layoutY="12.0" mnemonicParsing="false" text="Kies" />
+                      </children>
+                    </Pane>
                   </children>
                   <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="377.0" minWidth="10.0" prefWidth="305.0" />
