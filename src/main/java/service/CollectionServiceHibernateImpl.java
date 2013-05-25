@@ -37,7 +37,13 @@ public class CollectionServiceHibernateImpl implements ICollecionService {
 		try {
 			session.beginTransaction();
 			if (collection.getId() == null || collection.getId() == 0) {
-				id = (Long) session.save(collection);
+				Collection existingCollection = this.getByName(collection.getName());
+				if(existingCollection == null){
+					id = (Long) session.save(collection);					
+				}else{
+					throw new HibernateException("Collectie " + collection.getName() + " bestaat al" );
+				}
+				
 			} else {
 				session.update(collection);
 			}
@@ -63,7 +69,11 @@ public class CollectionServiceHibernateImpl implements ICollecionService {
 		try {
 			session.beginTransaction();
 			// First item from the list
-			collection = (Collection) crit.list().get(0);
+			@SuppressWarnings("unchecked")
+			List<Collection> list = crit.list();
+			if(!list.isEmpty()){
+				collection = (Collection) list.get(0); 
+			}
 		} catch (HibernateException ex) {
 			ex.printStackTrace();
 			session.getTransaction().rollback();
