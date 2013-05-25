@@ -135,4 +135,42 @@ public class WorkServiceHibernateImplTest {
 		int workCount = workService.getByQuery("from Work where title like '%aurore%'").size();
 		assertTrue(workCount == 1 );
 	}
+	
+	@Test
+	public void testSavingAWork(){
+		Work work = new Work();
+		work.setOpmerking("Opmerking");
+		work.setAdresEigenaar("adres eigenaar");
+		work.setAfbeeldingspad("afbeeldingspad");
+		work.setBreedte(20.00);
+		work.setHoogte(10.00);
+		work.setCreator("kunstenaar");
+		work.setJaar(2010);
+		work.setMedium("medium");
+		work.setPersonen("personen");
+		work.setThema("Thema");
+		work.setTitle("Titel");
+		work.setVorigeEigenaar("vorige eigenaar");
+		
+		
+		long id = workService.insertOrUpdate(work);
+		
+		Work found = workService.getById(id);
+		
+		assertEquals("opmerking", "Opmerking", found.getOpmerking());
+		assertEquals("adres eigenaar", "adres eigenaar", found.getAdresEigenaar());
+		assertEquals("afbeeldingspad", "afbeeldingspad", found.getAfbeeldingspad());
+		assertEquals("hoogte", 20.00, found.getBreedte(), 0.0001);
+		assertEquals("hoogte", 10.00, found.getHoogte(), 0.0001);
+		assertEquals("kunstenaar", "kunstenaar", found.getCreator());
+		assertEquals("jaar", 2010, found.getJaar());
+		assertEquals("medium", "medium", found.getMedium());
+		assertEquals("Opmerking", "Opmerking", found.getOpmerking());
+		assertEquals("personen", "personen", found.getPersonen());
+		assertEquals("Thema", "Thema", found.getThema());
+		assertEquals("Titel", "Titel", found.getTitle());
+		assertEquals("vorige eigenaar", "vorige eigenaar", found.getVorigeEigenaar());
+		
+		
+	}
 }
