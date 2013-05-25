@@ -26,6 +26,16 @@ import view.WorkView;
 import domain.Work;
 
 public class WorkListController implements Initializable {
+	
+	private static WorkListController instance;
+	
+	public WorkListController getInstance(){
+		if(instance == null){
+			instance = new WorkListController();
+		}
+		return instance;
+		
+	}
 
 	/**
 	 * FXML components
@@ -126,7 +136,7 @@ public class WorkListController implements Initializable {
 				Work newWork = new Work();
 				try {
 					WorkView.getInstance().show();
-					WorkView.getController().setWork(newWork);
+					WorkView.getController().setWork(newWork, WorkListController.this);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -144,7 +154,7 @@ public class WorkListController implements Initializable {
 					try {
 						workViewStage = WorkView.getInstance();
 						workViewStage.show();
-						WorkView.getController().setWork(work);
+						WorkView.getController().setWork(work, WorkListController.this);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -211,7 +221,7 @@ public class WorkListController implements Initializable {
 
 	}
 
-	private void loadAllWork() {
+	public void loadAllWork() {
 		work.setAll(workService.getAll());
 	}
 

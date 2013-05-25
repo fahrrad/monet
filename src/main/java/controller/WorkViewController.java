@@ -35,11 +35,14 @@ import domain.Work;
 public class WorkViewController implements Initializable {
 	
 	private final ICollecionService collectionService = new CollectionServiceHibernateImpl();
+	
+	private final IWorkService workService = new WorkServiceHibernateImpl();
 
 	private static final int LABEL_WIDTH = 105;
 	private static final int TEXT_WIDTH = 150;
 
 	private Map<String, TextInputControl> propertiesMap = new HashMap<String, TextInputControl>();
+	
 	
 	private Work work = new Work();
 	
@@ -52,9 +55,11 @@ public class WorkViewController implements Initializable {
 	
 	@FXML private ImageView imageView;
 
+
+	private WorkListController caller;
+
 	private class saveThread extends Thread{
 		final private Work work;
-		private final IWorkService workService = new WorkServiceHibernateImpl();
 		
 		public saveThread(Work workToSave){
 			work = workToSave; 
@@ -65,6 +70,7 @@ public class WorkViewController implements Initializable {
 			workService.insertOrUpdate(work);
 			
 		}	
+		
 	}
 	
 	
@@ -75,20 +81,20 @@ public class WorkViewController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
-				Work workToSave = new Work();
-				workToSave.setId(work.getId());
-				workToSave.setTitle(propertiesMap.get("Titel").getText());
-				workToSave.setCreator(propertiesMap.get("Kunstenaar").getText());
-				workToSave.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText()));
-				workToSave.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
-				workToSave.setMedium(propertiesMap.get("Medium").getText());
-				workToSave.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
- 				workToSave.setJaar(Integer.valueOf(propertiesMap.get("Jaar").getText()));
- 				workToSave.setThema(propertiesMap.get("Thema").getText());
- 				workToSave.setPersonen(propertiesMap.get("Personen").getText());
- 				workToSave.setOpmerking(propertiesMap.get("Opmerking").getText());
+				work.setTitle(propertiesMap.get("Titel").getText());
+				work.setCreator(propertiesMap.get("Kunstenaar").getText());
+				work.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText()));
+				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()));
+				work.setMedium(propertiesMap.get("Medium").getText());
+				work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
+ 				work.setJaar(Integer.valueOf(propertiesMap.get("Jaar").getText()));
+ 				work.setThema(propertiesMap.get("Thema").getText());
+ 				work.setPersonen(propertiesMap.get("Personen").getText());
+ 				work.setOpmerking(propertiesMap.get("Opmerking").getText());
 				
-				new saveThread(workToSave).start();
+				new saveThread(work).start();
+				
+				caller.loadAllWork();
 			}
 		});
 		
@@ -106,8 +112,6 @@ public class WorkViewController implements Initializable {
 		addPropertyToBox("Jaar", String.valueOf(work.getJaar()));
 		addPropertyToBox("Thema", work.getThema());
 		addPropertyToBox("Personen", work.getPersonen(),2); 
-
-		
 		addPropertyToBox("Opmerking", work.getOpmerking(), 3);
 		
 		// collection ComboBox
@@ -131,10 +135,19 @@ public class WorkViewController implements Initializable {
 		saveButton.setDisable(!changed);
 	}
 
-	public void setWork(Work work) {
-		this.work = work;
+	public void setWork(Work work, WorkListController caller) {
+		if(work.getId() != null){
+			this.work = workService.getById(work.getId());
+		}else{
+			this.work = work;
+		}
+		
 		update();
 		setChanged(false);
+		
+		this.caller = caller;
+		
+		
 	}
 
 	private void update() {
@@ -181,6 +194,7 @@ public class WorkViewController implements Initializable {
 					setChanged(true);
 				}
 			});
+			textArea.setText(value);
 			propertiesMap.put(name, textArea);
 			hbox.getChildren().addAll(label, textArea);
 		}
