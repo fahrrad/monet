@@ -1,13 +1,24 @@
 package controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.UUID;
+
+import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FilenameUtils;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -36,39 +47,60 @@ import domain.Collection;
 import domain.Work;
 
 public class WorkViewController implements Initializable {
-	
+
 	// Services
 	private final ICollecionService collectionService = new CollectionServiceHibernateImpl();
 	private final IWorkService workService = new WorkServiceHibernateImpl();
 
 	private static final int LABEL_WIDTH = 105;
 	private static final int TEXT_WIDTH = 150;
-	
+
 	private static final String SCANS_DIR = "C:/";
+	private static final String IMAGE_REPO = "images/";
 
 	private Map<String, TextInputControl> propertiesMap = new HashMap<String, TextInputControl>();
-	
+
 	private Work work = new Work();
-	
+
 	@SuppressWarnings("unused")
 	private boolean changed = false;
 
-	@FXML private VBox propertiesVBox;
-	
-	@FXML private Button saveButton; 
-	
-	@FXML private Button changeImageButton;
-	
-	@FXML private ImageView imageView;
+	@FXML
+	private VBox propertiesVBox;
+
+	@FXML
+	private Button saveButton;
+
+	@FXML
+	private Button changeImageButton;
+
+	@FXML
+	private ImageView imageView;
 
 	// The caller will want to be refreshed when a new work is added
 	private WorkListController caller;
 
-	private class saveThread extends Task<Void>{
+	private class saveThread extends Task<Void> {
 		final private Work work;
-		
-		public saveThread(Work workToSave){
-			work = workToSave; 
+
+		public saveThread(Work workToSave) {
+			work = workToSave;
+			work.setTitle(propertiesMap.get("Titel").getText());
+			work.setCreator(propertiesMap.get("Kunstenaar").getText());
+			work.setBreedte(Double.valueOf(propertiesMap.get("Breedte")
+					.getText().replace(',', '.')));
+			work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte")
+					.getText().replace(',', '.')));
+			work.setMedium(propertiesMap.get("Medium").getText());
+			work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar")
+					.getText());
+			work.setJaar(Integer.valueOf(propertiesMap.get("Jaar")
+					.getText()));
+			work.setThema(propertiesMap.get("Thema").getText());
+			work.setPersonen(propertiesMap.get("Personen").getText());
+			work.setOpmerking(propertiesMap.get("Opmerking").getText());
+			work.setAfbeeldingspad(propertiesMap.get("AfbeeldingsPad")
+					.getText());
 		}
 
 		@Override
@@ -81,60 +113,86 @@ public class WorkViewController implements Initializable {
 		protected void succeeded() {
 			super.succeeded();
 			caller.loadAllWork();
-		}	
-		
+			saveButton.setDisable(true);
+		}
+
 	}
-	
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		saveButton.setDisable(true);
 		saveButton.setOnAction(new EventHandler<ActionEvent>() {
-
 			@Override
 			public void handle(ActionEvent event) {
-				work.setTitle(propertiesMap.get("Titel").getText());
-				work.setCreator(propertiesMap.get("Kunstenaar").getText());
-				work.setBreedte(Double.valueOf(propertiesMap.get("Breedte").getText().replace(',','.')));
-				work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText().replace(',','.')));
-				work.setMedium(propertiesMap.get("Medium").getText());
-				work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar").getText());
- 				work.setJaar(Integer.valueOf(propertiesMap.get("Jaar").getText()));
- 				work.setThema(propertiesMap.get("Thema").getText());
- 				work.setPersonen(propertiesMap.get("Personen").getText());
- 				work.setOpmerking(propertiesMap.get("Opmerking").getText());
- 				work.setAfbeeldingspad(propertiesMap.get("AfbeeldingsPad").getText());
-				
 				new saveThread(work).run();
 			}
 		});
-		
+
 		changeImageButton.setOnAction(new EventHandler<ActionEvent>() {
-			
+
 			@Override
 			public void handle(ActionEvent event) {
-				FileChooser fileChooser= new FileChooser();
+				FileChooser fileChooser = new FileChooser();
 				fileChooser.setInitialDirectory(new File(SCANS_DIR));
 				File imageFile = fileChooser.showOpenDialog(null);
-				
-				System.out.println(imageFile.getAbsolutePath());
-				propertiesMap.get("AfbeeldingsPad").setText(imageFile.getAbsolutePath());
-				work.setAfbeeldingspad(imageFile.getAbsolutePath());
-				
-				loadImage();
-				
+
+				if (imageFile != null) {
+
+					String newFileName = copyFileToImageRepo(imageFile
+							.getAbsolutePath());
+
+					work.setAfbeeldingspad(newFileName);
+
+					loadImage();
+					saveButton.setDisable(false);
+				}
+
+			}
+
+			private String copyFileToImageRepo(String absolutePath) {
+				String newFileName = UUID.randomUUID().toString();
+				File originalFile = new File(absolutePath);
+				Path newFilePath = Paths.get(IMAGE_REPO, newFileName + "."
+						+ FilenameUtils.getExtension(absolutePath));
+
+				try {
+					Files.copy(Paths.get(originalFile.getPath()), newFilePath,
+							StandardCopyOption.COPY_ATTRIBUTES);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null,
+							"Kan de afbeelding niet kopieren!", "error",
+							JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+					propertiesMap.get("AfbeeldingsPad").setText("");
+					return null;
+				}
+				propertiesMap.get("AfbeeldingsPad").setText(newFilePath.toString());
+				new saveThread(work).run();
+				return newFilePath.toString();
 			}
 		});
 
 		HBox.setHgrow(imageView, Priority.ALWAYS);
 	}
-	
 
 	private void addProperties() {
 		loadImage();
-		
-		
+
 		addPropertyToBox("Titel", work.getTitle());
+		propertiesMap.get("Titel").textProperty()
+				.addListener(new InvalidationListener() {
+
+					@Override
+					public void invalidated(Observable observable) {
+						StringProperty stringProperty = (StringProperty) observable;
+						if (stringProperty.getValue().isEmpty()) {
+							changeImageButton.setDisable(true);
+						} else {
+							changeImageButton.setDisable(false);
+						}
+					}
+				});
+
 		addPropertyToBox("Kunstenaar", work.getCreator());
 		addPropertyToBox("Breedte", String.valueOf(work.getBreedte()));
 		addPropertyToBox("Hoogte", String.valueOf(work.getHoogte()));
@@ -142,10 +200,10 @@ public class WorkViewController implements Initializable {
 		addPropertyToBox("Vorige Eigenaar", work.getVorigeEigenaar());
 		addPropertyToBox("Jaar", String.valueOf(work.getJaar()));
 		addPropertyToBox("Thema", work.getThema());
-		addPropertyToBox("Personen", work.getPersonen(),2); 
+		addPropertyToBox("Personen", work.getPersonen(), 2);
 		addPropertyToBox("Opmerking", work.getOpmerking(), 3);
 		addPropertyToBox("AfbeeldingsPad", work.getAfbeeldingspad());
-		
+
 		// collection ComboBox
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(5, 10, 5, 12));
@@ -155,40 +213,44 @@ public class WorkViewController implements Initializable {
 		label.setText("Collection");
 		label.setMaxWidth(LABEL_WIDTH);
 		label.setMinWidth(LABEL_WIDTH);
-		
-		ChoiceBox<Collection> collections = new ChoiceBox<>(FXCollections.observableArrayList(collectionService.getAll()));
+
+		ChoiceBox<Collection> collections = new ChoiceBox<>(
+				FXCollections.observableArrayList(collectionService.getAll()));
 		hbox.getChildren().addAll(label, collections);
 		propertiesVBox.getChildren().add(hbox);
-		
-	}
 
+	}
 
 	private void loadImage() {
-		double imageViewHeight = imageView.getFitHeight();
 		double imageViewWidth = imageView.getFitWidth();
-		Image image = new Image(work.getAfbeeldingspad(), imageViewWidth, 
-				imageViewHeight, true, true, false);
+
+		Image image = new Image(work.getAfbeeldingspad());
+
+		imageView.setPreserveRatio(true);
+		imageView.setSmooth(true);
+		imageView.setCache(true);
+		imageView.setFitWidth(imageViewWidth);
 		imageView.setImage(image);
+
 	}
-	
-	private void setChanged(boolean changed){
+
+	private void setChanged(boolean changed) {
 		this.changed = changed;
 		saveButton.setDisable(!changed);
 	}
 
 	public void setWork(Work work, WorkListController caller) {
-		if(work.getId() != null){
+		if (work.getId() != null) {
 			this.work = workService.getById(work.getId());
-		}else{
+		} else {
 			this.work = work;
 		}
-		
+
 		update();
 		setChanged(false);
-		
+
 		this.caller = caller;
-		
-		
+
 	}
 
 	private void update() {
@@ -213,7 +275,7 @@ public class WorkViewController implements Initializable {
 			textField.setMaxWidth(TEXT_WIDTH);
 			textField.setMinHeight(20);
 			textField.textProperty().addListener(new InvalidationListener() {
-				
+
 				@Override
 				public void invalidated(Observable observable) {
 					setChanged(true);
@@ -226,10 +288,10 @@ public class WorkViewController implements Initializable {
 			textArea.setPrefRowCount(rowCount);
 			textArea.setMinWidth(TEXT_WIDTH);
 			textArea.setMaxWidth(TEXT_WIDTH);
-			
+
 			textArea.setMinHeight(20 * rowCount);
 			textArea.textProperty().addListener(new InvalidationListener() {
-				
+
 				@Override
 				public void invalidated(Observable observable) {
 					setChanged(true);
