@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,23 +19,27 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import javax.swing.JOptionPane;
+
 import service.CollectionServiceHibernateImpl;
 import service.ICollecionService;
 import service.IWorkService;
 import service.WorkServiceHibernateImpl;
+import view.CollectionView;
 import view.WorkView;
 import domain.Work;
 
 public class WorkListController implements Initializable {
-	
+
 	private static WorkListController instance;
-	
-	public WorkListController getInstance(){
-		if(instance == null){
+
+	public WorkListController getInstance() {
+		if (instance == null) {
 			instance = new WorkListController();
 		}
 		return instance;
-		
+
 	}
 
 	/**
@@ -71,6 +76,12 @@ public class WorkListController implements Initializable {
 	@FXML
 	private Button addButton;
 
+	@FXML
+	private javafx.scene.control.MenuItem closeMenuItem;
+	
+	@FXML 
+	private javafx.scene.control.MenuItem collectiesMenuItem;
+
 	/**
 	 * services
 	 */
@@ -90,6 +101,9 @@ public class WorkListController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		// sbuscribe to changes in the collection
+		
+		
 		// loading data
 		loadAllWork();
 		loadCollections();
@@ -136,7 +150,8 @@ public class WorkListController implements Initializable {
 				Work newWork = new Work();
 				try {
 					WorkView.getInstance().show();
-					WorkView.getController().setWork(newWork, WorkListController.this);
+					WorkView.getController().setWork(newWork,
+							WorkListController.this);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -154,10 +169,42 @@ public class WorkListController implements Initializable {
 					try {
 						workViewStage = WorkView.getInstance();
 						workViewStage.show();
-						WorkView.getController().setWork(work, WorkListController.this);
+						WorkView.getController().setWork(work,
+								WorkListController.this);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+				}
+			}
+		});
+
+		closeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				if (JOptionPane.showConfirmDialog(null, "Programma sluiten?") == JOptionPane.OK_OPTION) {
+					Platform.exit();
+				}
+
+			}
+		});
+		
+		collectiesMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					CollectionView.getInstance().start(new Stage());
+					CollectionView.getInstance().getController().subscribeToChanges(new Callback<Void, Void>() {
+						// refresh collections
+						@Override
+						public Void call(Void param) {
+							loadCollections();
+							return null;
+						}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});

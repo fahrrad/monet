@@ -84,14 +84,14 @@
       <top>
         <MenuBar>
           <menus>
-            <Menu mnemonicParsing="false" text="File">
+            <Menu mnemonicParsing="false" text="Bestand">
               <items>
-                <MenuItem mnemonicParsing="false" text="Close" />
+                <MenuItem mnemonicParsing="false" text="Sluiten" fx:id="closeMenuItem" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
               <items>
-                <MenuItem mnemonicParsing="false" text="Delete" />
+                <MenuItem mnemonicParsing="false" text="Collecties" fx:id="collectiesMenuItem" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
