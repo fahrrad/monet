@@ -33,6 +33,10 @@ public class CollectionServiceHibernateImplTest {
 			System.out.println("about to delete " + col.getId());
 			collecionService.delete(col.getId());
 		}
+		
+		for(Work work : workService.getAll()){
+			workService.delete(work.getId());
+		}
 	}
 
 	@Test
@@ -59,6 +63,45 @@ public class CollectionServiceHibernateImplTest {
 	}
 	
 	@Test
+	public void testWhatHappensToCascading(){
+		assertEquals("Expected 0 work", 0, workService.getAll().size());
+
+		Collection col1 = new Collection("Col1");
+		Long colId = collecionService.insertOrUpdate(col1);
+		
+		Work w1 = new Work("title1", "creator1");
+		Long workId = workService.insertOrUpdate(w1);
+		w1.setId(workId);
+		
+		assertEquals("Expected 1 work", 1, workService.getAll().size());
+		assertEquals("Expected 1 collection", 1, collecionService.getAll().size());
+		
+		assertNotNull(colId);
+		assertNotNull(workId);
+		
+		col1.addWork(w1);
+		collecionService.insertOrUpdate(col1);
+		col1 = collecionService.getById(colId);
+
+		assertEquals("One work", 1, col1.getWorks().size());
+		
+		// Should be there after select
+		w1 = workService.getById(workId);
+		assertEquals("One collection", 1, w1.getCollecties().size());
+		
+		
+		assertEquals("Expected 1 work", 1, workService.getAll().size());
+		assertEquals("Expected 1 collection", 1, collecionService.getAll().size());
+		
+		collecionService.delete(colId);
+		w1 = workService.getById(workId);
+		
+		assertEquals("Expected 1 work", 1, workService.getAll().size());
+		assertEquals("Expected 0 collection", 0, collecionService.getAll().size());
+		assertEquals("No collection", 0, w1.getCollecties().size());
+	}
+	
+	@Test
 	public void testDeleteCollections(){
 		Collection col = new Collection();
 		col.setName("delete this collection");
@@ -75,11 +118,13 @@ public class CollectionServiceHibernateImplTest {
 	@Test
 	public void testSavingWithWorks() {
 		Work w1 = new Work("title", "creator");
-		workService.insertOrUpdate(w1);
+		Long workId = workService.insertOrUpdate(w1);
+		w1.setId(workId);
 		
 		Collection col = new Collection();
 		col.setName("test col");
-		collecionService.insertOrUpdate(col);
+		Long colId = collecionService.insertOrUpdate(col);
+		col.setId(colId);
 		
 		col.addWork(w1);
 		collecionService.insertOrUpdate(col);
@@ -149,5 +194,6 @@ public class CollectionServiceHibernateImplTest {
 		col2.setName("dup");
 		collecionService.insertOrUpdate(col2);
 	}
+
 
 }
