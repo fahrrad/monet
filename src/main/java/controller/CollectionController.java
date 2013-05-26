@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import service.CollectionServiceHibernateImpl;
 import service.ICollecionService;
 import domain.Collection;
@@ -37,6 +40,9 @@ public class CollectionController implements Initializable {
 
 	// items of the list
 	ObservableList<String> items = FXCollections.observableArrayList();
+	
+	// functions to call when a collection is added
+	List<Callback<Void, Void>> callbackList = new ArrayList<>(); 
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -67,6 +73,7 @@ public class CollectionController implements Initializable {
 						public void handle(WindowEvent event) {
 							System.out.println("reloading all the collections");
 							loadAllCollections();
+							callAllCallbacks();
 						}
 					});
 
@@ -91,6 +98,7 @@ public class CollectionController implements Initializable {
 							.getByName(selectedCol);
 					collectionService.delete(collection.getId());
 					items.remove(selectedCol);
+					callAllCallbacks();
 				}
 			}
 		});
@@ -99,5 +107,18 @@ public class CollectionController implements Initializable {
 	private void loadAllCollections() {
 		items.clear();
 		items.addAll(collectionService.getAllNames());
+	}
+	
+	/**
+	 * When changing something to the collections, call the interested classes
+	 */
+	private void callAllCallbacks(){
+		for(Callback<Void, Void> callback : callbackList){
+			callback.call(null);
+		}
+	}
+	
+	public void  subscribeToChanges(Callback<Void, Void> callback){
+		callbackList.add(callback);
 	}
 }

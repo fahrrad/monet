@@ -7,6 +7,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -43,8 +44,8 @@ public class Collection {
 		setName(name);
 	}
 
-	@ManyToMany()
-	@JoinTable(name = "werken_collecties")
+	@ManyToMany(cascade=CascadeType.DETACH)
+	@JoinTable(name = "WerkenCollecties")
 	@Fetch(FetchMode.JOIN)
 	public List<Work> getWorks() {
 		return works;
