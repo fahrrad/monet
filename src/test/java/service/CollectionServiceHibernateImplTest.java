@@ -58,7 +58,6 @@ public class CollectionServiceHibernateImplTest {
 
 		Collection found = collecionService.getById(id);
 		assertEquals(col.getName(), found.getName());
-		assertEquals(col.getWorks().size(), found.getWorks().size());
 
 	}
 	
@@ -68,37 +67,37 @@ public class CollectionServiceHibernateImplTest {
 
 		Collection col1 = new Collection("Col1");
 		Long colId = collecionService.insertOrUpdate(col1);
+		col1.setId(colId);
 		
+		// add work to collection
 		Work w1 = new Work("title1", "creator1");
+		w1.setCollectie(col1);
+
 		Long workId = workService.insertOrUpdate(w1);
 		w1.setId(workId);
 		
-		assertEquals("Expected 1 work", 1, workService.getAll().size());
-		assertEquals("Expected 1 collection", 1, collecionService.getAll().size());
 		
 		assertNotNull(colId);
 		assertNotNull(workId);
-		
-		col1.addWork(w1);
-		collecionService.insertOrUpdate(col1);
-		col1 = collecionService.getById(colId);
-
-		assertEquals("One work", 1, col1.getWorks().size());
-		
-		// Should be there after select
-		w1 = workService.getById(workId);
-		assertEquals("One collection", 1, w1.getCollecties().size());
-		
-		
 		assertEquals("Expected 1 work", 1, workService.getAll().size());
 		assertEquals("Expected 1 collection", 1, collecionService.getAll().size());
+				
+		// Should be there after select
+		w1 = workService.getById(workId);
+		assertEquals("Collectie filled in", colId, w1.getCollectie().getId());
+				
+		assertEquals("Expected 1 work", 1, workService.getAll().size());
+		assertEquals("Expected 1 collection", 1, collecionService.getAll().size());
+		
+		w1.setCollectie(null);
+		workService.insertOrUpdate(w1);
 		
 		collecionService.delete(colId);
 		w1 = workService.getById(workId);
 		
 		assertEquals("Expected 1 work", 1, workService.getAll().size());
 		assertEquals("Expected 0 collection", 0, collecionService.getAll().size());
-		assertEquals("No collection", 0, w1.getCollecties().size());
+		assertEquals("No collection", null, w1.getCollectie());
 	}
 	
 	@Test
@@ -115,26 +114,6 @@ public class CollectionServiceHibernateImplTest {
 		assertNull(col);
 	}
 	
-	@Test
-	public void testSavingWithWorks() {
-		Work w1 = new Work("title", "creator");
-		Long workId = workService.insertOrUpdate(w1);
-		w1.setId(workId);
-		
-		Collection col = new Collection();
-		col.setName("test col");
-		Long colId = collecionService.insertOrUpdate(col);
-		col.setId(colId);
-		
-		col.addWork(w1);
-		collecionService.insertOrUpdate(col);
-		
-		Collection found = collecionService.getByName("test col");
-		assertEquals(1, found.getWorks().size());
-		assertEquals("Work should be what we put in", w1, found.getWorks().get(0));
-		
-	}
-
 	@Test
 	public void testGettingCollectionByName() {
 		Collection col = new Collection();

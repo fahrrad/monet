@@ -2,16 +2,16 @@ package domain;
 
 // Generated 6-feb-2012 9:19:46 by Hibernate Tools 3.2.1.GA
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -32,7 +32,7 @@ public class Work {
 	private String VorigeEigenaar;
 	private String personen;
 
-	private Set<Collection> collecties = new HashSet<Collection>();
+	private Collection collectie;
 
 	public Work() {
 		title = "";
@@ -47,6 +47,7 @@ public class Work {
 		adresEigenaar = "";
 		VorigeEigenaar = "";
 		personen = "";
+		collectie = null;
 	}
 
 	public Work(String title, String creator) {
@@ -180,15 +181,16 @@ public class Work {
 	}
 	
 	
-	@ManyToMany
-	@JoinTable(name = "WerkenCollecties")
+	@ManyToOne(fetch = FetchType.EAGER)
+	@Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
+	@JoinColumn(name = "CollectieId")
 	@Fetch(FetchMode.JOIN)
-	public Set<Collection> getCollecties() {
-		return collecties;
+	public Collection getCollectie() {
+		return collectie;
 	}
 
-	public void setCollecties(Set<Collection> collecties) {
-		this.collecties = collecties;
+	public void setCollectie(Collection collectie) {
+		this.collectie = collectie;
 	}
 
 	@Override
@@ -205,7 +207,7 @@ public class Work {
 		temp = Double.doubleToLongBits(breedte);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result
-				+ ((collecties == null) ? 0 : collecties.hashCode());
+				+ ((collectie == null) ? 0 : collectie.hashCode());
 		result = prime * result + ((creator == null) ? 0 : creator.hashCode());
 		temp = Double.doubleToLongBits(hoogte);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -247,10 +249,10 @@ public class Work {
 		if (Double.doubleToLongBits(breedte) != Double
 				.doubleToLongBits(other.breedte))
 			return false;
-		if (collecties == null) {
-			if (other.collecties != null)
+		if (collectie == null) {
+			if (other.collectie != null)
 				return false;
-		} else if (!collecties.equals(other.collecties))
+		} else if (!collectie.equals(other.collectie))
 			return false;
 		if (creator == null) {
 			if (other.creator != null)
