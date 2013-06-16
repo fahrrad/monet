@@ -23,7 +23,7 @@ import javafx.util.Callback;
 import javax.swing.JOptionPane;
 
 import service.CollectionServiceHibernateImpl;
-import service.ICollecionService;
+import service.ICollectionService;
 import service.IWorkService;
 import service.WorkServiceHibernateImpl;
 import view.CollectionView;
@@ -87,7 +87,7 @@ public class WorkListController implements Initializable {
 	 */
 	private final IWorkService workService = new WorkServiceHibernateImpl();
 
-	private final ICollecionService collectionService = new CollectionServiceHibernateImpl();
+	private final ICollectionService collectionService = new CollectionServiceHibernateImpl();
 
 	/**
 	 * Observable Lists

@@ -10,7 +10,7 @@ import org.hibernate.criterion.Restrictions;
 
 import domain.Collection;
 
-public class CollectionServiceHibernateImpl implements ICollecionService {
+public class CollectionServiceHibernateImpl implements ICollectionService {
 
 	@Override
 	public Collection getById(Long id) {

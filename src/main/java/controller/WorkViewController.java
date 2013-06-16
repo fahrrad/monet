@@ -15,6 +15,8 @@ import java.util.UUID;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -22,6 +24,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,7 +43,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import service.CollectionServiceHibernateImpl;
-import service.ICollecionService;
+import service.ICollectionService;
 import service.IWorkService;
 import service.WorkServiceHibernateImpl;
 import domain.Collection;
@@ -49,8 +52,13 @@ import domain.Work;
 public class WorkViewController implements Initializable {
 
 	// Services
-	private final ICollecionService collectionService = new CollectionServiceHibernateImpl();
+	// private final ICollectionService collectionService = new
+	// CollectionServiceHibernateImpl();
 	private final IWorkService workService = new WorkServiceHibernateImpl();
+	private final ICollectionService collectionService = new CollectionServiceHibernateImpl();
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(WorkViewController.class);
 
 	private static final int LABEL_WIDTH = 105;
 	private static final int TEXT_WIDTH = 150;
@@ -77,6 +85,8 @@ public class WorkViewController implements Initializable {
 	@FXML
 	private ImageView imageView;
 
+	private ChoiceBox<Collection> collections;
+
 	// The caller will want to be refreshed when a new work is added
 	private WorkListController caller;
 
@@ -89,18 +99,20 @@ public class WorkViewController implements Initializable {
 			work.setCreator(propertiesMap.get("Kunstenaar").getText());
 			work.setBreedte(Double.valueOf(propertiesMap.get("Breedte")
 					.getText().replace(',', '.')));
-			work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte")
-					.getText().replace(',', '.')));
+			work.setHoogte(Double.valueOf(propertiesMap.get("Hoogte").getText()
+					.replace(',', '.')));
 			work.setMedium(propertiesMap.get("Medium").getText());
 			work.setVorigeEigenaar(propertiesMap.get("Vorige Eigenaar")
 					.getText());
-			work.setJaar(Integer.valueOf(propertiesMap.get("Jaar")
-					.getText()));
+			work.setJaar(Integer.valueOf(propertiesMap.get("Jaar").getText()));
 			work.setThema(propertiesMap.get("Thema").getText());
 			work.setPersonen(propertiesMap.get("Personen").getText());
 			work.setOpmerking(propertiesMap.get("Opmerking").getText());
 			work.setAfbeeldingspad(propertiesMap.get("AfbeeldingsPad")
 					.getText());
+			
+			work.setCollectie(collections.getSelectionModel().getSelectedItem());
+
 		}
 
 		@Override
@@ -117,9 +129,13 @@ public class WorkViewController implements Initializable {
 		}
 
 	}
-	
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		logger.debug("javaFX version: "
+				+ com.sun.javafx.runtime.VersionInfo.getRuntimeVersion());
+
+		// Ask the user for confirmation before closing the window
 		saveButton.setDisable(true);
 		saveButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -132,6 +148,7 @@ public class WorkViewController implements Initializable {
 
 			@Override
 			public void handle(ActionEvent event) {
+				// TODO :save last choosen location
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setInitialDirectory(new File(SCANS_DIR));
 				File imageFile = fileChooser.showOpenDialog(null);
@@ -166,7 +183,8 @@ public class WorkViewController implements Initializable {
 					propertiesMap.get("AfbeeldingsPad").setText("");
 					return null;
 				}
-				propertiesMap.get("AfbeeldingsPad").setText(newFilePath.toString());
+				propertiesMap.get("AfbeeldingsPad").setText(
+						newFilePath.toString());
 				new saveThread(work).run();
 				return newFilePath.toString();
 			}
@@ -214,9 +232,18 @@ public class WorkViewController implements Initializable {
 		label.setMaxWidth(LABEL_WIDTH);
 		label.setMinWidth(LABEL_WIDTH);
 
-		ChoiceBox<Collection> collections = new ChoiceBox<>(
+		collections = new ChoiceBox<>(
 				FXCollections.observableArrayList(collectionService.getAll()));
 		hbox.getChildren().addAll(label, collections);
+		collections.getSelectionModel().select(work.getCollectie());
+		collections.getSelectionModel().selectedIndexProperty().addListener(new InvalidationListener() {
+			
+			@Override
+			public void invalidated(Observable observable) {
+				setChanged(true);
+				
+			}
+		});
 		propertiesVBox.getChildren().add(hbox);
 
 	}
@@ -224,13 +251,16 @@ public class WorkViewController implements Initializable {
 	private void loadImage() {
 		double imageViewWidth = imageView.getFitWidth();
 
-		Image image = new Image(work.getAfbeeldingspad());
-
-		imageView.setPreserveRatio(true);
-		imageView.setSmooth(true);
-		imageView.setCache(true);
-		imageView.setFitWidth(imageViewWidth);
-		imageView.setImage(image);
+		if (!work.getAfbeeldingspad().isEmpty()) {
+			Image image = new Image(work.getAfbeeldingspad());
+			imageView.setPreserveRatio(true);
+			imageView.setSmooth(true);
+			imageView.setCache(true);
+			imageView.setFitWidth(imageViewWidth);
+			imageView.setImage(image);
+		} else {
+			imageView.setImage(null);
+		}
 
 	}
 

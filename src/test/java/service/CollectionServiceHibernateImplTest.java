@@ -17,7 +17,7 @@ import domain.Work;
 
 public class CollectionServiceHibernateImplTest {
 
-	private static ICollecionService collecionService;
+	private static ICollectionService collecionService;
 	private static IWorkService workService;
 
 	@BeforeClass

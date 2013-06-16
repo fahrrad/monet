@@ -11,7 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import service.CollectionServiceHibernateImpl;
-import service.ICollecionService;
+import service.ICollectionService;
 import domain.Collection;
 
 public class AddCollectionController implements Initializable {
@@ -25,7 +25,7 @@ public class AddCollectionController implements Initializable {
 	@FXML
 	private TextField nameTextField;
 
-	private static final ICollecionService collectionService = new CollectionServiceHibernateImpl();
+	private static final ICollectionService collectionService = new CollectionServiceHibernateImpl();
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {

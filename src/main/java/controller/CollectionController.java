@@ -22,12 +22,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import service.CollectionServiceHibernateImpl;
-import service.ICollecionService;
+import service.ICollectionService;
 import domain.Collection;
 
 public class CollectionController implements Initializable {
 
-	ICollecionService collectionService = new CollectionServiceHibernateImpl();
+	ICollectionService collectionService = new CollectionServiceHibernateImpl();
 
 	@FXML
 	private ListView<String> collectionList;
