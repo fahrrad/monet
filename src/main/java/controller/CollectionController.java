@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.swing.JOptionPane;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import service.CollectionServiceHibernateImpl;
+import service.CouldNotDeleteException;
 import service.ICollectionService;
 import domain.Collection;
 
@@ -40,9 +43,9 @@ public class CollectionController implements Initializable {
 
 	// items of the list
 	ObservableList<String> items = FXCollections.observableArrayList();
-	
+
 	// functions to call when a collection is added
-	List<Callback<Void, Void>> callbackList = new ArrayList<>(); 
+	List<Callback<Void, Void>> callbackList = new ArrayList<>();
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -96,9 +99,13 @@ public class CollectionController implements Initializable {
 				if (selectedCol != null) {
 					Collection collection = collectionService
 							.getByName(selectedCol);
-					collectionService.delete(collection.getId());
-					items.remove(selectedCol);
-					callAllCallbacks();
+					try {
+						collectionService.delete(collection.getId());
+						items.remove(selectedCol);
+						callAllCallbacks();
+					} catch (CouldNotDeleteException ex) {
+						JOptionPane.showMessageDialog(null, "kan deze collectie niet verwijderen. Zijn er nog werken aan verbonden?");
+					}
 				}
 			}
 		});
@@ -108,17 +115,17 @@ public class CollectionController implements Initializable {
 		items.clear();
 		items.addAll(collectionService.getAllNames());
 	}
-	
+
 	/**
 	 * When changing something to the collections, call the interested classes
 	 */
-	private void callAllCallbacks(){
-		for(Callback<Void, Void> callback : callbackList){
+	private void callAllCallbacks() {
+		for (Callback<Void, Void> callback : callbackList) {
 			callback.call(null);
 		}
 	}
-	
-	public void  subscribeToChanges(Callback<Void, Void> callback){
+
+	public void subscribeToChanges(Callback<Void, Void> callback) {
 		callbackList.add(callback);
 	}
 }

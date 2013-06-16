@@ -3,12 +3,16 @@ package service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import domain.Collection;
+import domain.Work;
 
 public class CollectionServiceHibernateImpl implements ICollectionService {
 
@@ -84,12 +88,12 @@ public class CollectionServiceHibernateImpl implements ICollectionService {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id) throws CouldNotDeleteException {
 		Session session = HibernateUtil.getSessionFactory().openSession();
-
+		
 		try {
 			session.beginTransaction();
-
+			
 			Collection collection = (Collection) session.byId(Collection.class)
 					.load(id);
 			session.delete(collection);
@@ -98,6 +102,7 @@ public class CollectionServiceHibernateImpl implements ICollectionService {
 		} catch (HibernateException ex) {
 			ex.printStackTrace();
 			session.getTransaction().rollback();
+			throw new CouldNotDeleteException();
 		} finally {
 			session.close();
 		}

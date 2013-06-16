@@ -12,7 +12,7 @@ public interface ICollectionService {
 
 	public Collection getByName(String name);
 
-	public void delete(Long id);
+	public void delete(Long id) throws CouldNotDeleteException;
 
 	List<Collection> getAll();
 

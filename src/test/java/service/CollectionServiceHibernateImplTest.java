@@ -28,15 +28,16 @@ public class CollectionServiceHibernateImplTest {
 	
 	
 	@After
-	public void destroy(){
-		for(Collection col : collecionService.getAll()){
-			System.out.println("about to delete " + col.getId());
-			collecionService.delete(col.getId());
-		}
-		
+	public void destroy() throws CouldNotDeleteException{
 		for(Work work : workService.getAll()){
 			workService.delete(work.getId());
 		}
+
+		for(Collection col : collecionService.getAll()){
+			System.out.println("about to delete " + col.getId());
+			 collecionService.delete(col.getId());
+		}
+		
 	}
 
 	@Test
@@ -62,7 +63,7 @@ public class CollectionServiceHibernateImplTest {
 	}
 	
 	@Test
-	public void testWhatHappensToCascading(){
+	public void testWhatHappensToCascading() throws CouldNotDeleteException{
 		assertEquals("Expected 0 work", 0, workService.getAll().size());
 
 		Collection col1 = new Collection("Col1");
@@ -101,7 +102,7 @@ public class CollectionServiceHibernateImplTest {
 	}
 	
 	@Test
-	public void testDeleteCollections(){
+	public void testDeleteCollections() throws CouldNotDeleteException{
 		Collection col = new Collection();
 		col.setName("delete this collection");
 
@@ -172,6 +173,22 @@ public class CollectionServiceHibernateImplTest {
 		Collection col2 = new Collection();
 		col2.setName("dup");
 		collecionService.insertOrUpdate(col2);
+	}
+	
+	@Test(expected=CouldNotDeleteException.class)
+	public void testDoNotDeleteCollectionWithWork() throws CouldNotDeleteException{
+		Collection col1 = new Collection();
+		col1.setName("col1");
+		
+		col1.setId(collecionService.insertOrUpdate(col1));
+		
+		Work work1 = new Work("test1", "test2");
+		work1.setCollectie(col1);
+		work1.setId(workService.insertOrUpdate(work1));
+		
+		collecionService.delete(col1.getId());
+		
+		
 	}
 
 
