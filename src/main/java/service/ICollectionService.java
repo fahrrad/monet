@@ -4,7 +4,7 @@ import java.util.List;
 
 import domain.Collection;
 
-public interface ICollecionService {
+public interface ICollectionService {
 
 	public Collection getById(Long id);
 
