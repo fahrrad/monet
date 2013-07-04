@@ -3,16 +3,12 @@ package service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Root;
-
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import domain.Collection;
-import domain.Work;
 
 public class CollectionServiceHibernateImpl implements ICollectionService {
 
